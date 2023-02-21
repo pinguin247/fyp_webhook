@@ -10,6 +10,8 @@ const {
   getExercise2,
 } = require("./choosingresponse");
 const { users } = require("./usersData");
+var fs = require("firebase-admin");
+var forDisabilityPurposes = 0;
 
 app.get("/", (req, res) => {
   res.send("We are live");
@@ -52,7 +54,42 @@ app.post("/", express.json(), (req, res) => {
     // x_m = 1;
     // response = await choosingroute(x_m, sessionID);
     // users[sessionID].firstTime = 0;
-    agent.add("Let's go!");
+
+    [medicalCondition, disability] = await fs
+      .firestore()
+      .collection("Users")
+      .doc(users[sessionID].personNameCR)
+      .get()
+      .then(function (doc) {
+        return [doc.data().medicalCondition, doc.data().disability]; //must return variable, if not cannot access it outside of this block
+      });
+
+    if (forDisabilityPurposes == 1) {
+      disability = disability - 1;
+      console.log(disability);
+    }
+
+    exerciseName = await fs
+      .firestore()
+      .collection(`Selection`)
+      .doc(medicalCondition)
+      .get()
+      .then(function (doc) {
+        return doc.data().disability[disability];
+      });
+
+    console.log(exerciseName);
+
+    additionalDetails = await fs
+      .firestore()
+      .collection(medicalCondition)
+      .doc(exerciseName)
+      .get()
+      .then(function (doc) {
+        return doc.data().additionalInfoIfAgree; //must return variable, if not cannot access it outside of this block
+      });
+    console.log(additionalDetails);
+    agent.add("Let's get moving! " + additionalDetails);
   }
 
   async function _3bidontWantToDoExercise_WhyWebhookResponse(agent) {
@@ -74,6 +111,7 @@ app.post("/", express.json(), (req, res) => {
     response = await choosingroute(x_m, sessionID); //choosingroute(x_m). x_m represents motivation node. x_m = 0 means motivation is low.
     users[sessionID].firstTime = 0;
     users[sessionID].persuasionAttempt = users[sessionID].persuasionAttempt + 1;
+    forDisabilityPurposes = forDisabilityPurposes + 1;
     // response = await trialFunction();
     console.log(response);
     agent.add(response);

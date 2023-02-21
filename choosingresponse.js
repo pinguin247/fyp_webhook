@@ -25,7 +25,7 @@ function createNewSessionData(sessionID) {
     y_c: 0,
     y_p: 1,
     strategyWeights: {
-      central: [0.2, 0.2, 0.2, 0.2, 0.2],
+      central: [0.2, 0.2, 0.2, 0.3, 0.2],
       peripheral: [0.167, 0.167, 0.7, 0.167, 0.167, 0.167],
     },
 
