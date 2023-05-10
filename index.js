@@ -168,13 +168,6 @@ app.post("/", express.json(), (req, res) => {
     users[sessionID].persuasionAttempt = users[sessionID].persuasionAttempt + 1;
     exerciseName2 = await getExercise2(sessionID);
     return exerciseName2;
-    // agent.add(
-    //   "Hello " +
-    //     users[sessionID].personNameCR +
-    //     ", What about " +
-    //     exerciseName2 +
-    //     " instead?"
-    // );
   }
 
   var intentMap = new Map();
