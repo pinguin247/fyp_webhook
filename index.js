@@ -1,6 +1,7 @@
+// Import required modules and initialize Express app
 const express = require("express");
 const app = express();
-const dfff = require("dialogflow-fulfillment");
+const dfff = require("dialogflow-fulfillment"); //Change this to LLM (CHATGPT)
 const {
   choosingroute,
   getStrategy,
@@ -13,20 +14,29 @@ const { users } = require("./usersData");
 var fs = require("firebase-admin");
 var forDisabilityPurposes = 0;
 
+// Define the root endpoint which returns a live status
 app.get("/", (req, res) => {
   res.send("We are live");
 });
 
+// Define the main webhook endpoint that Dialogflow will call
 app.post("/", express.json(), (req, res) => {
   const agent = new dfff.WebhookClient({
     request: req,
     response: res,
   });
 
+   // A demo function for testing the webhook
   function demo(agent) {
     var message = agent.add("Sending response from Webhook server");
   }
 
+  // Custom intent handlers follow here:
+  // Each function is async and they correspond to different Dialogflow intents
+  // The names like _1DefaultWelcomeIntent_custom represent custom handlers for the intents
+  // Each handler performs specific actions like creating session data, retrieving exercises, 
+  // and interacting with Firestore to get user-specific data
+  // ...
   async function _1DefaultWelcomeIntent_custom(agent) {
     sessionID = agent.session;
     createNewSessionData(sessionID);
@@ -50,10 +60,6 @@ app.post("/", express.json(), (req, res) => {
     var tempName = await agent.context.get("username").parameters.name;
     users[sessionID].personNameCR = tempName; //context must be all small letters to work
     console.log(users[sessionID].personNameCR);
-    // exerciseName = await getExercise1(sessionID);
-    // x_m = 1;
-    // response = await choosingroute(x_m, sessionID);
-    // users[sessionID].firstTime = 0;
 
     [medicalCondition, disability] = await fs
       .firestore()
@@ -93,8 +99,6 @@ app.post("/", express.json(), (req, res) => {
   }
 
   async function _3bidontWantToDoExercise_WhyWebhookResponse(agent) {
-    //Problem is code below will always run when user says no. Should only run once for intialisation
-
     // start
 
     // initialisation. first time user does not want to do activity
@@ -132,12 +136,10 @@ app.post("/", express.json(), (req, res) => {
     sessionID = agent.session;
     // if users[sessionID].persuasionAttempt== 2, switch to new exercise.
     if (users[sessionID].persuasionAttempt == 3) {
-      blahblah = await _8SuggestNewExercise(agent);
-      console.log("kill me");
-      agent.add("What about " + blahblah + " instead?");
+      exercise = await _8SuggestNewExercise(agent);
+      agent.add("What about " + exercise + " instead?");
       return;
     } else if (users[sessionID].persuasionAttempt == 6) {
-      console.log("haiz");
       _7GiveUp(agent);
       return;
     }
@@ -170,8 +172,11 @@ app.post("/", express.json(), (req, res) => {
     return exerciseName2;
   }
 
+
+  // The intent map is a way to map intent names (from Dialogflow) to handler functions
   var intentMap = new Map();
 
+  // Add intent names and corresponding functions to the intent map
   intentMap.set("webhookDemo", demo);
   intentMap.set("_1DefaultWelcomeIntent_custom", _1DefaultWelcomeIntent_custom);
   intentMap.set(
@@ -194,9 +199,9 @@ app.post("/", express.json(), (req, res) => {
   intentMap.set("_7GiveUp", _7GiveUp);
   intentMap.set("_8SuggestNewExercise", _8SuggestNewExercise);
 
+  // Process the request with the mapped intent handlers
   agent.handleRequest(intentMap);
 });
 
-// exports.sessionID = sessionID;
-
+// Start the server on port 3333
 app.listen(3333, () => console.log("Server is live at port 3333."));

@@ -3,7 +3,7 @@ var fs = require("firebase-admin");
 var serviceAccount = require("./admin.json");
 
 fs.initializeApp({
-  credential: fs.credential.cert(serviceAccount),
+  credential: fs.credential.cert(serviceAccount), 
   databaseURL:
     "https://fyp-chatbot-6496a-default-rtdb.asia-southeast1.firebasedatabase.app",
 });
@@ -25,8 +25,8 @@ function createNewSessionData(sessionID) {
     y_c: 0,
     y_p: 1,
     strategyWeights: {
-      central: [0.2, 0.2, 0.2, 0.3, 0.2],
-      peripheral: [0.167, 0.167, 0.7, 0.167, 0.167, 0.167],
+      central: [0.2, 0.2, 0.2, 0.2, 0.2],
+      peripheral: [0.167, 0.167, 0.167, 0.167, 0.167, 0.167],
     },
 
     selectedStrategies: {
@@ -72,32 +72,10 @@ async function getExercise1(sessionID) {
     });
 
   console.log(users[sessionID].exerciseName);
-  // const collectionRef = await db.collection(users[sessionID].medicalCondition);
-  // // console.log("3/4");
-  // const snapshot = await collectionRef.get();
-  // if (snapshot.empty) {
-  //   console.log("No matching documents.");
-  //   return;
-  // }
-  // var listOfExercise = [];
-
-  // snapshot.forEach((doc) => {
-  //   listOfExercise.push(doc.id);
-  //   console.log(listOfExercise);
-  // });
-
-  // users[sessionID].exerciseName =
-  //   listOfExercise[users[sessionID].exerciseIndex];
-  // users[sessionID].exerciseIndex = (users[sessionID].exerciseIndex + 1) % 2; // divide by 2 because only got 2 exercises
-  // console.log(users[sessionID].exerciseName);
   return users[sessionID].exerciseName;
 }
 
 async function getExercise2(sessionID) {
-  // console.log("getExercise");
-  // console.log(sessionID);
-  // console.log("getExercise2");
-  // console.log(users[sessionID].medicalCondition);
   [users[sessionID].medicalCondition, users[sessionID].disability] = await db
     .collection("Users")
     .doc(users[sessionID].personNameCR)
@@ -119,24 +97,6 @@ async function getExercise2(sessionID) {
     });
 
   console.log(users[sessionID].exerciseName);
-  // const collectionRef = await db.collection(users[sessionID].medicalCondition);
-  // // console.log("3/4");
-  // const snapshot = await collectionRef.get();
-  // if (snapshot.empty) {
-  //   console.log("No matching documents.");
-  //   return;
-  // }
-  // var listOfExercise = [];
-
-  // snapshot.forEach((doc) => {
-  //   listOfExercise.push(doc.id);
-  //   console.log(listOfExercise);
-  // });
-
-  // users[sessionID].exerciseName =
-  //   listOfExercise[users[sessionID].exerciseIndex];
-  // users[sessionID].exerciseIndex = (users[sessionID].exerciseIndex + 1) % 2; // divide by 2 because only got 2 exercises
-  // console.log(users[sessionID].exerciseName);
   return users[sessionID].exerciseName;
 }
 
@@ -232,21 +192,11 @@ async function choosingStrategy(
 }
 
 async function getStrategy(strategyNumberChosen, sessionID) {
-  // console.log(sessionID);
-  // strategyResponse =
-  //   strategies[strategyNumberChosen][users[sessionID].specificStrategyIndex];
   const documentRef = await db
     .collection(users[sessionID].medicalCondition)
     .doc(users[sessionID].exerciseName)
     .get();
-  // const strategy = documentRef.get(strategyNumberChosen);
-  // strategyResponse = strategy[users[sessionID].specificStrategyIndex];
-  // console.log(users[sessionID].medicalCondition);
-  // console.log(users[sessionID].exerciseName);
   const strategy = await documentRef.get(String(strategyNumberChosen));
-  // console.log(users[sessionID]);
-  // console.log(users[sessionID].specificStrategyIndex);
-  // console.log(strategy);
   strategyResponse = strategy[users[sessionID].specificStrategyIndex];
   // console.log(strategyResponse);
 
@@ -258,9 +208,6 @@ async function getStrategy(strategyNumberChosen, sessionID) {
 //successful will be reward value
 
 async function updateParameterValues(successful, sessionID) {
-  // console.log("updateParameterValues");
-  // console.log(users[sessionID].strategyIndexChosen);
-  // update weight of peripheral strategy
   if (users[sessionID].y_c < 0.5) {
     temporaryStrategyIndexChosen = users[sessionID].strategyIndexChosen - 5;
     users[sessionID].strategyWeights.peripheral[temporaryStrategyIndexChosen] =

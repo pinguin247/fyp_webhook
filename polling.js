@@ -10,7 +10,9 @@ const {
 
 const TG = require("node-telegram-bot-api");
 
+// Async function that checks a database and alerts a user through Telegram
 async function checkDBAndAlertUser() {
+  // Telegram bot token and initialization
   const token = "5713809336:AAGbpn4lBjk9rnDiEMEI6OG-g-cip7OQtnM";
   let telegramBot = new TG(token, { polling: true });
 
@@ -24,6 +26,8 @@ async function checkDBAndAlertUser() {
   send();
 
   await telegramBot.stopPolling();
+
+  // Set up a webhook for the Telegram bot
   telegramBot
     .setWebHook(
       app.get("/", (req, res) => {
@@ -34,18 +38,25 @@ async function checkDBAndAlertUser() {
     .catch((err) => console.log("webhook error: " + err.message));
 }
 
+// Call the checkDBAndAlertUser function
 checkDBAndAlertUser();
 
+// Endpoint to handle POST requests
 app.post("/", express.json(), (req, res) => {
   const agent = new dfff.WebhookClient({
     request: req,
     response: res,
   });
 
+  // Define webhook functions for different Dialogflow intents
   function demo(agent) {
     agent.add("Sending response from Webhook server");
   }
 
+  // The following functions handle various Dialogflow intents
+  // They set variables, choose responses, and send them back to the user
+  // The functions use the imported 'choosingroute', 'getStrategy', and 'updateParameterValues' functions
+  // from the 'choosingresponse' module to determine the response based on the user's state or input
   function _2initallyAlreadyWantToExercise_Webhook(agent) {
     x_m = 1;
     response = choosingroute(x_m);
