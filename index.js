@@ -16,11 +16,12 @@ var forDisabilityPurposes = 0;
 
 // Define the root endpoint which returns a live status
 app.get("/", (req, res) => {
-  res.send("We are live");
+  res.send("We are live YAYYYY");
 });
 
 // Define the main webhook endpoint that Dialogflow will call
 app.post("/", express.json(), (req, res) => {
+  console.log(req.body); 
   const agent = new dfff.WebhookClient({
     request: req,
     response: res,
@@ -40,11 +41,12 @@ app.post("/", express.json(), (req, res) => {
   async function _1DefaultWelcomeIntent_custom(agent) {
     sessionID = agent.session;
     createNewSessionData(sessionID);
-    // console.log(sessionID);
+    console.log("HELLOOO???")
     // get document ids/names for first time
     var tempName = await agent.context
       .get("username")
       .parameters.person.name.toLowerCase();
+    console.log(tempName);
     users[sessionID].personNameCR =
       tempName.charAt(0).toUpperCase() + tempName.slice(1); //context must be all small letters to work
     console.log(users[sessionID].personNameCR);
@@ -85,6 +87,7 @@ app.post("/", express.json(), (req, res) => {
       });
 
     console.log(exerciseName);
+    console.log(medicalCondition);
 
     additionalDetails = await fs
       .firestore()
@@ -95,6 +98,7 @@ app.post("/", express.json(), (req, res) => {
         return doc.data().additionalInfoIfAgree; //must return variable, if not cannot access it outside of this block
       });
     console.log(additionalDetails);
+    console.log("HELLOOOOOOOOO");
     agent.add("Let's get moving! " + additionalDetails);
   }
 

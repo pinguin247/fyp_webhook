@@ -5,7 +5,7 @@ var serviceAccount = require("./admin.json");
 fs.initializeApp({
   credential: fs.credential.cert(serviceAccount), 
   databaseURL:
-    "https://fyp-chatbot-6496a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "https://fyp-chatbot-5edb5-default-rtdb.asia-southeast1.firebasedatabase.app",
 });
 
 const db = fs.firestore();
@@ -47,8 +47,8 @@ function createNewSessionData(sessionID) {
 }
 
 async function getExercise1(sessionID) {
-  // console.log("getExercise");
-  // console.log(sessionID);
+  console.log("getExercise");
+  console.log(sessionID);
   // console.log("getExercise2");
   // console.log(users[sessionID].medicalCondition);
   [users[sessionID].medicalCondition, users[sessionID].disability] = await db
